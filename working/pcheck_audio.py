@@ -37,6 +37,7 @@ def read_message(conn):
 def send_audio(conn, audio_data):
     """Send audio back to Asterisk via AudioSocket"""
     # AudioSocket expects 320 bytes (20ms of 16-bit 8kHz PCM)
+    print("I am opened")
     if len(audio_data) != 320:
         # Pad or trim to exact size
         if len(audio_data) < 320:
