@@ -44,6 +44,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 import concurrent.futures
 import threading
 
+
 _background_loop = None
 
 def _start_background_loop():
