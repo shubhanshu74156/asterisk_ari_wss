@@ -35,249 +35,6 @@ MSG_AUDIO = 0x10
 MSG_ERROR = 0xff
 
 
-class FunctionLibrary:
-    """Library of available functions that AI can call"""
-
-    def __init__(self):
-        print("🔧 Function Library initialized")
-
-    def end_call(self, reason="User requested"):
-        """End the current call
-
-        Args:
-            reason (str): Reason for ending the call
-        """
-        print(f"📞 [FUNCTION] End call function initiated - Reason: {reason}")
-        result = {"action": "end_call", "reason": reason, "message": f"Call ended: {reason}"}
-        print("✅ [FUNCTION] End call function executed")
-        return result
-
-    def roll_dice(self, num_dice=1, sides=6):
-        """Roll one or more dice
-
-        Args:
-            num_dice (int): Number of dice to roll (default: 1)
-            sides (int): Number of sides on each die (default: 6)
-        """
-        print(f"🎲 [FUNCTION] Rolling {num_dice} dice with {sides} sides each")
-
-        results = []
-        for i in range(num_dice):
-            roll = random.randint(1, sides)
-            results.append(roll)
-
-        total = sum(results)
-        result = {
-            "action": "roll_dice",
-            "num_dice": num_dice,
-            "sides": sides,
-            "results": results,
-            "total": total,
-            "message": f"Rolled {results} (total: {total})" if num_dice > 1 else f"Rolled {results[0]}"
-        }
-
-        print(f"🎯 [FUNCTION] Dice results: {result['message']}")
-        print("✅ [FUNCTION] Roll dice executed")
-        return result
-
-    def pick_random_animal(self, category="all"):
-        """Pick a random animal from a specified category
-
-        Args:
-            category (str): Category of animal (all, mammals, birds, reptiles, etc.)
-        """
-        print(f"🐾 [FUNCTION] Picking random animal from category: {category}")
-
-        animals = {
-            "all": ["Lion", "Elephant", "Cheetah", "Dog", "Cat", "Pig", "Sparrow", "Eagle", "Snake", "Turtle", "Shark", "Dolphin"],
-            "mammals": ["Lion", "Elephant", "Cheetah", "Dog", "Cat", "Pig", "Dolphin", "Bear", "Tiger"],
-            "birds": ["Sparrow", "Eagle", "Parrot", "Penguin", "Owl", "Flamingo"],
-            "reptiles": ["Snake", "Turtle", "Lizard", "Crocodile", "Iguana"],
-            "sea": ["Shark", "Dolphin", "Whale", "Octopus", "Starfish"]
-        }
-
-        animal_list = animals.get(category.lower(), animals["all"])
-        selected_animal = random.choice(animal_list)
-
-        result = {
-            "action": "pick_random_animal",
-            "category": category,
-            "selected_animal": selected_animal,
-            "message": f"Selected {selected_animal} from {category} animals"
-        }
-
-        print(f"🦁 [FUNCTION] Selected animal: {selected_animal}")
-        print("✅ [FUNCTION] Animal selection executed")
-        return result
-
-    def get_random_number(self, min_value=1, max_value=100):
-        """Generate a random number within a specified range
-
-        Args:
-            min_value (int): Minimum value (default: 1)
-            max_value (int): Maximum value (default: 100)
-        """
-        print(f"🔢 [FUNCTION] Generating random number between {min_value} and {max_value}")
-
-        number = random.randint(min_value, max_value)
-
-        result = {
-            "action": "get_random_number",
-            "min_value": min_value,
-            "max_value": max_value,
-            "number": number,
-            "message": f"Generated random number: {number}"
-        }
-
-        print(f"🎯 [FUNCTION] Random number: {number}")
-        print("✅ [FUNCTION] Random number generation executed")
-        return result
-
-    def flip_coin(self, num_flips=1):
-        """Flip one or more coins
-
-        Args:
-            num_flips (int): Number of coins to flip (default: 1)
-        """
-        print(f"🪙 [FUNCTION] Flipping {num_flips} coin(s)")
-
-        results = []
-        for i in range(num_flips):
-            flip = random.choice(["Heads", "Tails"])
-            results.append(flip)
-
-        result = {
-            "action": "flip_coin",
-            "num_flips": num_flips,
-            "results": results,
-            "message": f"Coin flip results: {', '.join(results)}" if num_flips > 1 else f"Coin flip: {results[0]}"
-        }
-
-        print(f"🎯 [FUNCTION] Coin flip results: {results}")
-        print("✅ [FUNCTION] Coin flip executed")
-        return result
-
-    def get_available_functions(self):
-        """Get list of all available functions"""
-        return [
-            {
-                "type": "function",
-                "function": {
-                    "name": "end_call",
-                    "description": "End the current phone call. Use when user says goodbye, wants to hang up, or indicates they're done.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "reason": {
-                                "type": "string",
-                                "description": "Reason for ending the call"
-                            }
-                        },
-                        "required": ["reason"]
-                    }
-                }
-            },
-            {
-                "type": "function",
-                "function": {
-                    "name": "roll_dice",
-                    "description": "Roll one or more dice. Use when user wants to roll dice, play dice games, or needs random numbers via dice.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "num_dice": {
-                                "type": "integer",
-                                "description": "Number of dice to roll",
-                                "default": 1
-                            },
-                            "sides": {
-                                "type": "integer",
-                                "description": "Number of sides on each die",
-                                "default": 6
-                            }
-                        }
-                    }
-                }
-            },
-            {
-                "type": "function",
-                "function": {
-                    "name": "pick_random_animal",
-                    "description": "Pick a random animal from a category. Use when user wants to know about animals, play animal games, or needs a random animal name.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "category": {
-                                "type": "string",
-                                "description": "Category of animal to pick from",
-                                "enum": ["all", "mammals", "birds", "reptiles", "sea"],
-                                "default": "all"
-                            }
-                        }
-                    }
-                }
-            },
-            {
-                "type": "function",
-                "function": {
-                    "name": "get_random_number",
-                    "description": "Generate a random number within a range. Use when user needs random numbers, lottery numbers, or number games.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "min_value": {
-                                "type": "integer",
-                                "description": "Minimum value for the random number",
-                                "default": 1
-                            },
-                            "max_value": {
-                                "type": "integer",
-                                "description": "Maximum value for the random number",
-                                "default": 100
-                            }
-                        }
-                    }
-                }
-            },
-            {
-                "type": "function",
-                "function": {
-                    "name": "flip_coin",
-                    "description": "Flip one or more coins to get heads or tails. Use when user wants to flip coins, make decisions, or play coin games.",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "num_flips": {
-                                "type": "integer",
-                                "description": "Number of coins to flip",
-                                "default": 1
-                            }
-                        }
-                    }
-                }
-            }
-        ]
-
-    def execute_function(self, function_name, arguments):
-        """Execute a function by name with given arguments"""
-        try:
-            function_map = {
-                "end_call": self.end_call,
-                "roll_dice": self.roll_dice,
-                "pick_random_animal": self.pick_random_animal,
-                "get_random_number": self.get_random_number,
-                "flip_coin": self.flip_coin
-            }
-
-            if function_name in function_map:
-                return function_map[function_name](**arguments)
-            else:
-                return {"error": f"Function {function_name} not found"}
-
-        except Exception as e:
-            print(f"❌ [FUNCTION] Error executing {function_name}: {e}")
-            return {"error": f"Error executing {function_name}: {str(e)}"}
-
 
 class SimpleVAD:
     """Simple Voice Activity Detection using RMS and silence detection"""
@@ -287,7 +44,7 @@ class SimpleVAD:
         self.silence_threshold = 200  # RMS threshold for silence
         self.speech_threshold = 500   # RMS threshold for speech
         self.min_speech_duration = 0.2  # seconds
-        self.silence_duration = 1.5     # seconds of silence to trigger processing
+        self.silence_duration = 1    # seconds of silence to trigger processing
         self.is_speaking = False
         self.speech_start_time = None
         self.last_speech_time = time.time()
@@ -317,9 +74,9 @@ class SimpleVAD:
         rms = self.calculate_rms(audio_chunk)
         self.rms.append(rms)
 
-        result = self.detect_spike_point(self.rms)
-        if result:
-            self.speech_threshold = result[1]
+        # result = self.detect_spike_point(self.rms)
+        # if result:
+        #     self.speech_threshold = result[1]
 
 
         current_time = time.time()
@@ -372,36 +129,36 @@ class SimpleVAD:
         return False
     
 
-    def detect_spike_point(self, data, m=3, T_S=3, T_R=10, eps=1):
-        """
-        Detect the first index where numbers 'start spinning' (large deviation).
+    # def detect_spike_point(self, data, m=3, T_S=3, T_R=10, eps=1):
+    #     """
+    #     Detect the first index where numbers 'start spinning' (large deviation).
 
-        Parameters:
-            data : list of numbers
-            m    : warm-up window (minimum points before detection)
-            T_S  : threshold for robust z-score (default 3)
-            T_R  : threshold for relative ratio (default 10)
-            eps  : small value to prevent division by zero
+    #     Parameters:
+    #         data : list of numbers
+    #         m    : warm-up window (minimum points before detection)
+    #         T_S  : threshold for robust z-score (default 3)
+    #         T_R  : threshold for relative ratio (default 10)
+    #         eps  : small value to prevent division by zero
 
-        Returns:
-            (index, value) where spinning starts, or None if not found.
-        """
-        n = len(data)
-        if n <= m:
-            return None  # not enough data
+    #     Returns:
+    #         (index, value) where spinning starts, or None if not found.
+    #     """
+    #     n = len(data)
+    #     if n <= m:
+    #         return None  # not enough data
         
-        for k in range(m, n):
-            previous = data[:k]
-            B = statistics.median(previous)
-            MAD = statistics.median([abs(x - B) for x in previous]) or eps
+    #     for k in range(m, n):
+    #         previous = data[:k]
+    #         B = statistics.median(previous)
+    #         MAD = statistics.median([abs(x - B) for x in previous]) or eps
             
-            S = abs(data[k] - B) / max(MAD, eps)   
-            R = data[k] / max(B, eps)              
+    #         S = abs(data[k] - B) / max(MAD, eps)   
+    #         R = data[k] / max(B, eps)              
             
-            if S > T_S or R > T_R:
-                return k, data[k]
+    #         if S > T_S or R > T_R:
+    #             return k, data[k]
         
-        return None
+    #     return None
 
     def get_audio_buffer(self):
         """Get and clear the audio buffer, combining with interrupted audio if any"""
@@ -502,16 +259,29 @@ class Utils:
 
 
 class Agent:
-    def __init__(self, custom_function_prompt=""):
-        self.function_library = FunctionLibrary()
-        self.custom_function_prompt = custom_function_prompt
+    def __init__(self, ):
         print("🤖 Agent Class Initialized with AI-driven function calling")
 
-    async def transcribe_audio(self, audio_bytes, sample_rate=8000):
+    async def transcribe_audio(self, audio_bytes, sample_rate=16000):
         """Async transcription using OpenAI Whisper"""
         temp_path = None
         try:
             print(f"🎙️ [TRANSCRIBE] Starting transcription of {len(audio_bytes)} bytes...")
+            from datetime import datetime
+            save_dir = "saved_audio"
+            os.makedirs(save_dir, exist_ok=True)
+
+            # Generate unique filename
+            filename = datetime.now().strftime("%Y%m%d_%H%M%S_%f") + ".wav"
+            file_path = os.path.join(save_dir, filename)
+
+            with wave.open(file_path, 'wb') as wf:
+                wf.setnchannels(1)
+                wf.setsampwidth(2)
+                wf.setframerate(sample_rate)
+                wf.writeframes(audio_bytes)
+
+            print("Saved:", file_path)
 
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio:
                 temp_path = temp_audio.name
@@ -571,9 +341,6 @@ class Agent:
                 - Flip coins for decision making or coin toss games
                 - End calls when users say goodbye or want to hang up
 
-                Additional function calling guidance:
-                {self.custom_function_prompt}
-
                 Always respond naturally and incorporate function results into your conversation."""
             }
 
@@ -591,7 +358,6 @@ class Agent:
             print("📡 [CHAT] Sending to OpenAI Chat API with function calling...")
 
             # Get available functions
-            available_functions = self.function_library.get_available_functions()
 
             loop = asyncio.get_event_loop()
             response = await loop.run_in_executor(
@@ -601,74 +367,20 @@ class Agent:
                     messages=conversation_history,
                     temperature=0.7,
                     max_tokens=150,
-                    tools=available_functions,
-                    tool_choice="auto"
                 )
             )
 
             message = response.choices[0].message
+        
+            ai_text = message.content
+            print(f"✅ [CHAT] Regular AI Response: '{ai_text}'")
 
-            # Check if AI wants to call functions
-            if message.tool_calls:
-                print(f"🔧 [FUNCTIONS] AI decided to call {len(message.tool_calls)} function(s)")
+            conversation_history.append({
+                "role": "assistant",
+                "content": ai_text
+            })
 
-                # Add assistant message with tool calls to conversation
-                conversation_history.append({
-                    "role": "assistant",
-                    "content": message.content,
-                    "tool_calls": [tc.dict() for tc in message.tool_calls]
-                })
-
-                # Execute each function call
-                function_results = []
-                for tool_call in message.tool_calls:
-                    function_name = tool_call.function.name
-                    function_args = json.loads(tool_call.function.arguments)
-
-                    print(f"🎯 [FUNCTION] Executing {function_name} with args: {function_args}")
-
-                    # Execute the function
-                    result = self.function_library.execute_function(function_name, function_args)
-                    function_results.append(result)
-
-                    # Add function result to conversation
-                    conversation_history.append({
-                        "role": "tool",
-                        "content": json.dumps(result),
-                        "tool_call_id": tool_call.id
-                    })
-
-                # Get final response incorporating function results
-                print("🔄 [CHAT] Getting final response with function results...")
-                final_response = await loop.run_in_executor(
-                    None,
-                    lambda: client.chat.completions.create(
-                        model="gpt-4o-mini",
-                        messages=conversation_history,
-                        temperature=0.7,
-                        max_tokens=150
-                    )
-                )
-
-                ai_text = final_response.choices[0].message.content
-                print(f"✅ [CHAT] Final AI Response with functions: '{ai_text}'")
-
-                # Check if any function was "end_call"
-                end_call_requested = any(result.get("action") == "end_call" for result in function_results)
-
-                return ai_text, function_results, end_call_requested
-
-            else:
-                # No function calls, just regular response
-                ai_text = message.content
-                print(f"✅ [CHAT] Regular AI Response: '{ai_text}'")
-
-                conversation_history.append({
-                    "role": "assistant",
-                    "content": ai_text
-                })
-
-                return ai_text, [], False
+            return ai_text
 
         except Exception as e:
             print(f"❌ [CHAT] Error: {e}")
@@ -714,11 +426,11 @@ class Agent:
 
 
 class AdvancedHandler:
-    def __init__(self, conn, addr, custom_function_prompt=""):
+    def __init__(self, conn, addr):
         self.conn = conn
         self.addr = addr
         self.utils = Utils()
-        self.agent = Agent(custom_function_prompt)
+        self.agent = Agent()
         self.vad = SimpleVAD()
         self.conversation_history = []
         self.is_processing = False
@@ -781,7 +493,7 @@ class AdvancedHandler:
 
             # Get AI response with intelligent function calling
             print("🧠 [PIPELINE] Getting AI response with function calling...")
-            ai_response, function_results, end_call_requested = self.loop.run_until_complete(
+            ai_response  = self.loop.run_until_complete(
                 self.agent.get_ai_response_with_functions(transcription, self.conversation_history)
             )
 
@@ -790,19 +502,6 @@ class AdvancedHandler:
                 return
 
             print(f"🤖 [AI] Response: \"{ai_response}\"")
-            if function_results:
-                print(f"🔧 [FUNCTIONS] Executed {len(function_results)} function(s)")
-                for result in function_results:
-                    print(f"   - {result.get('action', 'unknown')}: {result.get('message', 'no message')}")
-
-            # Handle end call request from AI
-            if end_call_requested:
-                print("📞 [AI-ENDING] AI decided to end the call")
-                farewell_audio = self.loop.run_until_complete(self.agent.text_to_speech(ai_response))
-                if farewell_audio:
-                    self.utils.send_audio_chunks(self.conn, farewell_audio, self)
-                self.conn.close()
-                return
 
             # Convert to speech and send
             print("🔊 [PIPELINE] Converting response to speech...")
@@ -1040,7 +739,7 @@ def main():
                 print(f"\n🎉 [SERVER] New connection #{connection_count} from {addr}")
 
                 # Create handler instance for this connection with custom function prompt
-                handler = AdvancedHandler(conn, addr, custom_prompt)
+                handler = AdvancedHandler(conn, addr)
 
                 # Create new handler thread
                 handler_thread = threading.Thread(
